@@ -31,6 +31,7 @@ Ensure you have the following installed:
 - **Real-time Form Validation** for email, phone number, password strength, and required fields
 - **Submission Handling** with error messages for invalid inputs
 - **Fetching Company Data** from an external API and displaying the results dynamically
+- **Dark Mode** a toggle for a diffrent style
 - **Loading Spinner** when fetching company data
 - **Responsive Design** with Tailwind CSS
 
