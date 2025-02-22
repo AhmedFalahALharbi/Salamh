@@ -1,4 +1,3 @@
-// Types for form data and validation
 interface FormData {
   companyName: string;
   commercialRegNumber: string;
