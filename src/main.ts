@@ -17,7 +17,6 @@ interface ValidationErrors {
   [key: string]: string;
 }
 
-// Validation rules
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_REGEX = /^\+?[\d\s-]{10,}$/;
 
@@ -37,34 +36,30 @@ class FormValidator {
   static validateForm(data: FormData): ValidationErrors {
     this.errors = {};
 
-    // Check for empty fields
     Object.entries(data).forEach(([key, value]) => {
       if (!value && key !== 'terms') {
         this.errors[key] = `${key.replace(/([A-Z])/g, ' $1').trim()} is required`;
       }
     });
 
-    // Email validation
     if (data.email && !EMAIL_REGEX.test(data.email)) {
       this.errors.email = 'Please enter a valid email address';
     }
 
-    // Password validation
     if (data.password && !this.validatePassword(data.password)) {
       this.errors.password = 'Password must be at least 8 characters long and contain uppercase, lowercase, numbers, and special characters';
     }
 
-    // Confirm password
+  
     if (data.password !== data.confirmPassword) {
       this.errors.confirmPassword = 'Passwords do not match';
     }
 
-    // Phone validation
     if (data.phoneNumber && !PHONE_REGEX.test(data.phoneNumber)) {
       this.errors.phoneNumber = 'Please enter a valid phone number';
     }
 
-    // Terms validation
+
     if (!data.terms) {
       this.errors.terms = 'You must accept the terms and conditions';
     }
@@ -73,20 +68,19 @@ class FormValidator {
   }
 }
 
-// Form handling
+
 const handleFormSubmission = async (): Promise<void> => {
   const form = document.getElementById('registrationForm') as HTMLFormElement;
   const formData = new FormData(form);
   const data = Object.fromEntries(formData.entries()) as unknown as FormData;
 
-  // Clear previous error messages
+
   document.querySelectorAll('.error-message').forEach(el => el.remove());
 
-  // Validate form
+
   const errors = FormValidator.validateForm(data);
 
   if (Object.keys(errors).length > 0) {
-    // Display error messages
     Object.entries(errors).forEach(([field, message]) => {
       const input = document.getElementById(field);
       if (input) {
@@ -100,6 +94,7 @@ const handleFormSubmission = async (): Promise<void> => {
     return;
   }
 
+// Upload Data
   try {
     const response = await fetch('https://67b9760151192bd378dd7c04.mockapi.io/organization', {
       method: 'POST',
@@ -125,18 +120,16 @@ const handleFormSubmission = async (): Promise<void> => {
     const result = await response.json();
     console.log('Success:', result);
     
-    // Show success message
+
     const successMessage = document.createElement('div');
     successMessage.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mt-4';
     successMessage.textContent = 'Registration successful!';
     form.appendChild(successMessage);
-    
-    // Reset form
+ 
     form.reset();
 
   } catch (error) {
     console.error('Error:', error);
-    // Show error message
     const errorMessage = document.createElement('div');
     errorMessage.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4';
     errorMessage.textContent = 'An error occurred during registration. Please try again.';
@@ -144,7 +137,6 @@ const handleFormSubmission = async (): Promise<void> => {
   }
 };
 
-// Event listeners
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('registrationForm');
   if (form) {
@@ -155,16 +147,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Function to fetch company details from an external API
+// Retrive Data
 const fetchCompanyDetails = async (): Promise<void> => {
   const apiFetchBtn = document.getElementById('apiFetchBtn');
   const container = document.getElementById('apifetch');
 
   if (!apiFetchBtn || !container) return;
 
-  // Show loading state
-  apiFetchBtn.textContent = 'Loading...';
-  
+
+   const spinner = document.createElement('div');
+   container.appendChild(spinner);
+ 
+   apiFetchBtn.textContent = '';
+   apiFetchBtn.className = 'loading loading-spinner loading-lg bg-green-300'
   try {
     const response = await fetch('https://67b9760151192bd378dd7c04.mockapi.io/organization');
     if (!response.ok) {
@@ -174,7 +169,6 @@ const fetchCompanyDetails = async (): Promise<void> => {
     displayCompanyDetails(companies);
   } catch (error) {
     console.error('Error fetching company details:', error);
-    // Optionally, show an error message on the page
     const errorMessage = document.createElement('div');
     errorMessage.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4';
     errorMessage.textContent = 'Unable to load company details. Please try again later.';
@@ -182,21 +176,19 @@ const fetchCompanyDetails = async (): Promise<void> => {
   }
 };
 
-// Function to display fetched company details on the page
 const displayCompanyDetails = (companies: any[]): void => {
   const container = document.getElementById('apifetch');
   if (container) {
-    container.innerHTML = ''; // Clear previous content
+    container.innerHTML = '';
     companies.forEach(company => {
       const companyDiv = document.createElement('div');
-      companyDiv.className = 'company-details p-4 border rounded-md m-2 w-full text-center shadow-lg';
-      companyDiv.textContent = `Name:${company.name}, Email:${company.email}, Phone:${company.phone}`;
+      companyDiv.className = 'company-details p-4 border rounded-md m-2 w-full text-center shadow-lg hover:shadow-green-200';
+      companyDiv.textContent = `Name:${company.name}, Email:${company.email}, Phone:${company.phone}, City:${company.city} Region:${company.region}, Business Type:${company.type} `;
       container.appendChild(companyDiv);
     });
   }
 };
 
-// Event listener for the API fetch button
 document.addEventListener('DOMContentLoaded', () => {
   const apiFetchBtn = document.getElementById('apiFetchBtn');
   if (apiFetchBtn) {
